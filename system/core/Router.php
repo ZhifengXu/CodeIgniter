@@ -478,10 +478,12 @@ class CI_Router {
 	/**
 	 * Set controller overrides
 	 *
+	 * If the routs had been override,rsegments changed after that!I think it's more logical.
+	 * 
 	 * @param	array	$routing	Route overrides
 	 * @return	void
 	 */
-	public function _set_overrides($routing)
+	function _set_overrides($routing)
 	{
 		if ( ! is_array($routing))
 		{
@@ -491,17 +493,22 @@ class CI_Router {
 		if (isset($routing['directory']))
 		{
 			$this->set_directory($routing['directory']);
+			$this->uri->rsegments['1']=$routing['directory'];
 		}
 
-		if ( ! empty($routing['controller']))
+		if (isset($routing['controller']) AND $routing['controller'] != '')
 		{
 			$this->set_class($routing['controller']);
+			$n=isset($routing['directory'])?2:1;
+			$this->uri->rsegments[$n]=$routing['controller'];
 		}
 
 		if (isset($routing['function']))
 		{
-			$routing['function'] = empty($routing['function']) ? 'index' : $routing['function'];
+			$routing['function'] = ($routing['function'] == '') ? 'index' : $routing['function'];
 			$this->set_method($routing['function']);
+			$n=isset($routing['directory'])?3:2;
+			$this->uri->rsegments[$n]=$routing['function'];
 		}
 	}
 
